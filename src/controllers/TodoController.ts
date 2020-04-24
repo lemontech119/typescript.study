@@ -1,17 +1,30 @@
 import { BaseController } from './BaseController';
 import { JsonController, Get, Post, Put, Delete, Param } from 'routing-controllers';
+import { PrismaClient } from '@prisma/client';
+
 
 @JsonController('/todos')
 export class TodoController extends BaseController {
+  private client: PrismaClient;
+
+  constructor(){
+    super();
+    this.client = new PrismaClient();
+  }
+
   @Get()
   public index() {
-    return[
-      {
-        id: 1,
-        title: 'must do',
-        description: 'how to create express'
-      }
-    ]
+    return this.client.todo.findMany();
+  }
+
+  @Get('/test')
+  public async test(){
+    await this.client.todo.create({
+      data: {
+        title: 'New Todo Item',
+        description: 'do something!'
+      },
+    });
   }
 
   @Post()
